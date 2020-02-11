@@ -7,48 +7,187 @@
     <link rel="icon" href="img/icon_16x16.png" />
   </head>
   <body>
-    <table id="spe">
-      <thead>
-        <th> Spécialité </th>
-        <th> Nombre d'éleves maximun par classe </th>
-      </thead>
-      <tbody>
-        <tr>
-          <td contenteditable='true'>Mathématique</td>
-          <td contenteditable='true'></td>
-        </tr>
-        <tr>
-          <td contenteditable='true'>Histoire Géo</td>
-          <td contenteditable='true'></td>
-        </tr>
-        <tr>
-          <td contenteditable='true'>SVT</td>
-          <td contenteditable='true'></td>
-        </tr>
-        <tr>
-          <td>Physique</td>
-          <td contenteditable='true'></td>
-        </tr>
-      </tbody>
-    </table>
+    <div id="help" class="fg">
+      <div class="c">
+      <button class="close" onclick="closeDiv('help')">X</button>
+      <h2>Fichier d'entrée</h2>
+      <span>Le fichier d'entrée est au format csv séparé par des `;`.</br>
+        Il est sous la forme du tableau suivant :</span>
+      <table>
+        <thead>
+          <th> Classe </th>
+          <th> Noms </th>
+          <th> Prénom </th>
+          <th> Spécialité 1 </th>
+          <th> Spécialité 2 </th>
+          <th> Spécialité 3 </th>
+          <th> ... </th>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Nombre d'élèves par spécialité</td>
+            <td></td>
+            <td></td>
+            <td>35</td>
+            <td>35</td>
+            <td>12</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>Classe 1</td>
+            <td>Noms 1</td>
+            <td>Prénom 1</td>
+            <td>1</td>
+            <td>1</td>
+            <td>1</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>Classe 2</td>
+            <td>Noms 2</td>
+            <td>Prénom 2</td>
+            <td>1</td>
+            <td>1</td>
+            <td>1</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>Classe 3</td>
+            <td>Noms 3</td>
+            <td>Prénom 3</td>
+            <td></td>
+            <td>1</td>
+            <td>1</td>
+            <td>1</td>
+          </tr>
+          <tr>
+            <td>Classe 4</td>
+            <td>Noms 4</td>
+            <td>Prénom 4</td>
+            <td>1</td>
+            <td>1</td>
+            <td></td>
+            <td>1</td>
+          </tr>
+          <tr>
+            <td>Classe 5</td>
+            <td>Noms 5</td>
+            <td>Prénom 5</td>
+            <td>1</td>
+            <td></td>
+            <td>1</td>
+            <td>1</td>
+          </tr>
+        </tbody>
+      </table>
+      </div>
+    </div>
+
+    <button id="stop" onclick="start()">Lancer le calcul</button>
+    <button onclick="result()">Afficher les résultats</button>
+    <button onclick="quit()">Quitter</button>
+    <button onclick="openDiv('help')">Aide</button>
+
+    <div id="result" class="fg">
+      <div class="c">
+        <button class="close" onclick="closeDiv('result')">X</button>
+        <h2>Calculs en cours</h2>
+        <table id="resultat">
+          <thead>
+            <th>#id</th>
+            <th>Score</th>
+            <th>Télécharger</th>
+          </thead>
+          <tbody>
+            <tr style="background-color: #80FF80;">
+              <td>1</td>
+              <td>10</td>
+              <td><button>Télécharger</button></td>
+            </tr>
+            <tr style="background-color: #80FF80;">
+              <td>2</td>
+              <td>50</td>
+              <td><button>Télécharger</button></td>
+            </tr>
+            <tr style="background-color: #FF8080;">
+              <td>3</td>
+              <td>1000</td>
+              <td><button>Télécharger</button></td>
+            </tr>
+            <tr style="background-color: #80FF80;">
+              <td></td>
+              <td>25</td>
+              <td><progress max="100" value="90">90%</progress></td>
+            </tr>
+            <tr style="background-color: #FF8080;">
+              <td></td>
+              <td>2000</td>
+              <td><progress max="100" value="10">10%</progress></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="volet" onclick="volet()">
+      <div id="f" class="volet_fermer" >
+        <div><span>Spécialités</span></div>
+      </div>
+      <div id="o" class="volet_ouvert">
+        <div><span>Spécialités</span></div>
+        <table id="spe">
+          <thead>
+            <th> Spécialité </th>
+            <th> Nombre d'élèves maximum par classe </th>
+          </thead>
+          <tbody>
+            <tr>
+              <td contenteditable='true'>Mathématiques</td>
+              <td contenteditable='true'></td>
+            </tr>
+            <tr>
+              <td contenteditable='true'>Histoire Géo</td>
+              <td contenteditable='true'></td>
+            </tr>
+            <tr>
+              <td contenteditable='true'>SVT</td>
+              <td contenteditable='true'></td>
+            </tr>
+            <tr>
+              <td contenteditable='true'>Physique</td>
+              <td contenteditable='true'></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
     <table id="eleve">
       <thead>
-        <th> Classe / Noms Prénom </th>
-        <th> x </th>
-        <th> x </th>
+        <th> <div>Classe </div></th>
+        <th> <div>Noms </div></th>
+        <th> <div>Prénom </div></th>
+        <th class="rotate"><div><span>Mathématiques</span></div></th>
+        <th class="rotate"><div><span>Histoire Géo</span></div></th>
       </thead>
       <tbody>
         <tr>
           <td contenteditable='true'></td>
-          <td><input type="checkbox" checked></td>
-          <td><input type="checkbox" ></td>
+          <td contenteditable='true'></td>
+          <td contenteditable='true'></td>
+          <td class="tc"><input type="checkbox" checked></td>
+          <td class="tc"><input type="checkbox" ></td>
         </tr>
         <tr>
           <td contenteditable='true'></td>
           <td contenteditable='true'></td>
           <td contenteditable='true'></td>
+          <td contenteditable='true'></td>
+          <td contenteditable='true'></td>
         </tr>
         <tr>
+          <td contenteditable='true'></td>
+          <td contenteditable='true'></td>
           <td contenteditable='true'></td>
           <td contenteditable='true'></td>
           <td contenteditable='true'></td>

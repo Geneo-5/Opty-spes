@@ -3,6 +3,7 @@ import os
 from os import path
 import time
 import service
+import sys
 
 RESOURCE=path.abspath(os.getcwd()+"/../clt/")
 MIMETYPE = {
@@ -36,7 +37,7 @@ class webServer(BaseHTTPRequestHandler):
 
     def do_POST(self):
         try:
-            if self.path in SERVICE:
+            if self.path in service.SERVICE:
                 # récupération des data
                 length = int(self.headers['Content-Length'])
                 if length > 10 * 1024 * 1024:
@@ -45,19 +46,23 @@ class webServer(BaseHTTPRequestHandler):
                 data = self.rfile.read(length)
 
                 # éxécution du service
-                message, typeData = SERVICE[self.path](data)
+                message, typeData = service.SERVICE[self.path](data)
+
+                if message == None:
+                    self.send_response(200)
+                    self.end_headers()
+                    self.wfile.write(b'')
+                    raise KeyboardInterrupt
 
                 # envoie de la réponse
                 self.send_response(200)
                 self.send_header("Content-type", MIMETYPE[typeData])
                 self.end_headers()
-                self.wfile.write(message)
+                self.wfile.write(message.encode('utf-8'))
             else:
                 self.send_error(404,'File Not Found')
         except KeyboardInterrupt:
             raise KeyboardInterrupt
-        except:
-            self.send_error(500,'Internal error')
 
 if __name__ == "__main__":
     print('Server listening on port 31415...')
@@ -68,3 +73,4 @@ if __name__ == "__main__":
         pass
     httpd.server_close()
     print("Server stopped.")
+    sys.exit()

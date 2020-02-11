@@ -9,7 +9,7 @@ Il est sous la forme du tableau suivant :
 
 |  Classe   |   Noms   |  Prénom   | Spécialité 1 | Spécialité 2 | Spécialité 3 | ... |
 |:---------:|:--------:|:---------:|:------------:|:------------:|:------------:|:---:|
-| Nombre d'élevés par spécialité |||      35      |      35      |      12      |     |
+| Nombre d'élèves par spécialité |||      35      |      35      |      12      |     |
 | Classe 1  | Noms 1   | Prénom 1  |       1      |      1       |       1      |     |
 | Classe 2  | Noms 2   | Prénom 2  |       1      |      1       |       1      |     |
 | Classe 3  | Noms 3   | Prénom 3  |              |      1       |       1      |  1  |
