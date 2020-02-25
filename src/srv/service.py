@@ -1,5 +1,5 @@
-from optyspes.eleves import Eleves
-from optyspes.algo import Gen
+from srv.optyspes.eleves import Eleves
+from srv.optyspes.algo import Gen
 import base64
 
 global ELEVES, TASK

@@ -1,11 +1,17 @@
-from http.server import BaseHTTPRequestHandler, HTTPServer
-import os
-from os import path
-import time
-import service
 import sys
+import os
+from http.server import BaseHTTPRequestHandler, HTTPServer
+import time
+import srv.service
 
-RESOURCE=path.abspath(os.getcwd()+"/../clt/")
+try:
+    # PyInstaller creates a temp folder and stores path in _MEIPASS
+    RESOURCE = os.path.abspath(os.path.join(getattr(sys, '_MEIPASS'),"clt/"))
+except:
+    RESOURCE = os.path.abspath(os.path.join(os.path.abspath(os.path.dirname(__file__)),"../clt/"))
+
+print(RESOURCE)
+
 MIMETYPE = {
     "html":'text/html',
     "css":'text/css',
@@ -22,7 +28,7 @@ class webServer(BaseHTTPRequestHandler):
         if self.path=="/":
             self.path="/index.html"
         try:
-            abspath = path.abspath(RESOURCE+self.path)
+            abspath = os.path.abspath(RESOURCE+self.path)
             if abspath.startswith(RESOURCE):
                 mimetype = MIMETYPE[abspath.split(".")[-1]]
                 self.send_response(200)
@@ -33,11 +39,11 @@ class webServer(BaseHTTPRequestHandler):
             else:
                 self.send_error(404,'File Not Found')
         except:
-            self.send_error(404,'File Not Found')
+            self.send_error(404,'File Not Found, exception')
 
     def do_POST(self):
         try:
-            if self.path in service.SERVICE:
+            if self.path in srv.service.SERVICE:
                 # récupération des data
                 length = int(self.headers['Content-Length'])
                 if length > 10 * 1024 * 1024:
@@ -46,7 +52,7 @@ class webServer(BaseHTTPRequestHandler):
                 data = self.rfile.read(length)
 
                 # éxécution du service
-                message, typeData = service.SERVICE[self.path](data)
+                message, typeData = srv.service.SERVICE[self.path](data)
 
                 if message == None:
                     self.send_response(200)
@@ -64,7 +70,7 @@ class webServer(BaseHTTPRequestHandler):
         except KeyboardInterrupt:
             raise KeyboardInterrupt
 
-if __name__ == "__main__":
+def start():
     print('Server listening on port 31415...')
     httpd = HTTPServer(('127.0.0.1', 31415), webServer)
     try:

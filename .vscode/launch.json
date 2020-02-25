@@ -8,9 +8,9 @@
             "name": "Run Server",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/src/srv/server.py",
+            "program": "${workspaceFolder}/src/__init__.py",
             "console": "integratedTerminal",
-            "cwd": "${workspaceFolder}/src/srv"
+            "cwd": "${workspaceFolder}/src"
         }
     ]
 }
