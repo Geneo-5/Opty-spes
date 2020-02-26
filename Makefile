@@ -11,7 +11,13 @@ else
         TARGET_PLATFORM = OSX
     endif
 endif
-VERSION=$(shell git describe --abbrev=0 --tags)
+tags=$(shell git describe --abbrev=0 --tags)
+diff-version=$(shell git log --pretty=oneline HEAD...$(tags) | wc -l)
+ifneq ($(diff-version),0)
+	VERSION=$(tags)-beta$(diff-version)
+else
+	VERSION=$(tags)
+endif
 
 mkfile_path := $(abspath $(lastword $(MAKEFILE_LIST)))
 current_dir := $(patsubst %/,%,$(dir $(mkfile_path)))
@@ -51,7 +57,7 @@ run:
 build: env
 	$(Q)convert $(RESSOURCES)/artificial-intelligence.svg $(CONVERT_ARG) -resize 512x512   $(DESTINATION)/icon.png
 ifeq ($(TARGET_PLATFORM),OSX)
-	# creation de l'icone pour app mac os x
+	# création de l'icone pour app mac os x
 	$(Q)mkdir -p $(DESTINATION)/appicon.iconset
 	$(Q)convert $(RESSOURCES)/artificial-intelligence.svg $(CONVERT_ARG) -resize 16x16     $(DESTINATION)/appicon.iconset/icon_16x16.png
 	$(Q)convert $(RESSOURCES)/artificial-intelligence.svg $(CONVERT_ARG) -resize 32x32     $(DESTINATION)/appicon.iconset/icon_16x16@2x.png
@@ -65,18 +71,23 @@ ifeq ($(TARGET_PLATFORM),OSX)
 	$(Q)convert $(RESSOURCES)/artificial-intelligence.svg $(CONVERT_ARG) -resize 1024x1024 $(DESTINATION)/appicon.iconset/icon_512x512@2x.png
  	$(Q)iconutil -c icns -o "$(DESTINATION)/appicon.icns" "$(DESTINATION)/appicon.iconset"
 endif
+	# création de l'exécutable
 	$(Q)pyinstaller opty-spes.spec
 ifeq ($(TARGET_PLATFORM),LINUX)
-	# creation du .deb pour linux
+	# création du .deb pour linux
 	$(Q)mkdir -p $(DEB)/DEBIAN
 	$(Q)mkdir -p $(DEB)/usr/bin
-	$(Q)mkdir -p $(DEB)/usr/share
+	$(Q)mkdir -p $(DEB)/usr/share/applications
+	$(Q)mkdir -p $(DEB)/usr/share/pixmaps
 	$(Q)mv $(DISTRIBUTION)/opty-spes $(DEB)/usr/bin
 	$(Q)cp $(RESSOURCES)/control $(DEB)/DEBIAN
 	$(Q)cp $(RESSOURCES)/post* $(DEB)/DEBIAN 2>/dev/null || :
 	$(Q)cp $(RESSOURCES)/pre* $(DEB)/DEBIAN 2>/dev/null || :
 	$(Q)chmod 755 $(DEB)/DEBIAN/post* 2>/dev/null || :
 	$(Q)chmod 755 $(DEB)/DEBIAN/pre* 2>/dev/null || :
+	$(Q)cp $(DESTINATION)/icon.png $(DEB)/usr/share/pixmaps/opty-spes.icon.png
+	$(Q)cp $(RESSOURCES)/opty-spes.desktop $(DEB)/usr/share/applications
 	$(Q)sed -i "s/Version:/Version: $(subst v,,$(VERSION))/g" $(DEB)/DEBIAN/control
+	$(Q)sed -i "s/Version=/Version=$(subst v,,$(VERSION))/g" $(DEB)/usr/share/applications/opty-spes.desktop
 	$(Q)cd $(DESTINATION) && dpkg-deb --build opty-spes-$(VERSION) $(DISTRIBUTION)
 endif
