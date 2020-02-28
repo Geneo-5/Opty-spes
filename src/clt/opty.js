@@ -5,7 +5,7 @@ function uploadFile(e) {
             e.stopPropagation();
             var f = e.dataTransfer.files[0];
             if (!f.type.match('.csv')) {
-                    alert('Le fichier doit être un CSV');
+                    document.getElementById('message').innerHTML = '<div class="mt-3 alert alert-danger alert-dismissible fade show" role="alert">Le fichier doit être un <strong>CSV</strong> !<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'
                     return false ;
             }
             var reader = new FileReader();
@@ -34,16 +34,11 @@ function getStatus() {
     xhttp.send();
 }
 
-function result() {
-    getStatus()
-    openDiv("result");
-}
-
 function started(){
     if (this.readyState == 4 && this.status == 200) {
         var json = JSON.parse(this.responseText);
         if (json.status == "OK") {
-            result()
+            getStatus()
             var id = setInterval(getStatus, 3000);
             var s = document.getElementById("stop")
             s.innerText = "Arrêter le calculs"
@@ -83,26 +78,6 @@ function handleReaderLoad(evt) {
 
 function preventDefault(event) {
     event.preventDefault();
-}
-
-function openDiv(div) {
-    document.getElementById(div).style.visibility = "visible";
-}
-
-function closeDiv(div) {
-    document.getElementById(div).style.visibility = "hidden";
-}
-
-function volet() {
-    var f = document.getElementById("f")
-    var o = document.getElementById("o")
-    if (f.style.display == "none") {
-        o.style.display = "none"
-        f.style.display = "block"
-    } else {
-        o.style.display = "block"
-        f.style.display = "none"
-    }
 }
 
 function quit() {

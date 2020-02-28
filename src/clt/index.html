@@ -5,9 +5,122 @@
     <meta charset="UTF-8">
     <link rel="stylesheet" type="text/css" href="opty.css">
     <link rel="icon" href="img/icon_16x16.png" />
+    <link rel="stylesheet" href="extern/bootstrap.min.css">
+    <script src="opty.js" ></script>
+
+    <script src="extern/jquery.min.js" ></script>
+    <script src="extern/popper.min.js" ></script>
+    <script src="extern/bootstrap.min.js" ></script>
+    <script src="extern/all.js" ></script>
   </head>
   <body>
-    <div id="help" class="fg">
+    <div class="container-fluid h-100">
+      <div class="row h-100">
+          <div class="col-auto bg-dark text-white py-3">
+              <ul class="nav nav-pills flex-column navbar-dark bg-dark">
+                <li class="nav-item text-center">
+                    <img src="img/icon_64x64.png" class="" alt="icon">
+                </li>
+                <li class="nav-item"><a class="nav-link active text-white" data-toggle="tab" href="#param"><i class="fas fa-users-cog"></i> Paramètres</a></li>
+                <li class="nav-item"><a class="nav-link text-white" data-toggle="tab" href="#eleves"><i class="fas fa-users"></i> Élèves</a></li>
+                <div class="dropdown-divider"></div>
+                
+                <li class="nav-item"><a class="nav-link text-white" data-toggle="tab" href="#result"><i class="fas fa-database"></i> Résultats</a></li>
+                
+                <div class="dropdown-divider"></div>
+                <li class="nav-item"><a class="nav-link text-white" data-toggle="tab" href="#aide"><i class="fas fa-question"></i> Aide</a></li>
+                <li class="nav-item"><a class="nav-link text-white" href="javascript:quit();"><i class="fas fa-sign-out-alt"></i> Quitter</a></li>
+              </ul>
+          </div>
+          <div class="col">
+            <div id='message'></div>
+              <div class="tab-content">
+                <div class="tab-pane active" id="param">
+                  <div class="my-3 border rounded border-muted bg-light text-muted d-flex align-items-center flex-column justify-content-center font-weight-bold" style="height:96vh;"><i class="fas fa-file-upload fa-9x"></i>Déposer un fichier CSV ici.</div>
+                </div>
+                <div class="tab-pane fade" id="eleves">
+                  <div class="my-3 border rounded border-muted bg-light text-muted d-flex align-items-center flex-column justify-content-center font-weight-bold" style="height:96vh;"><i class="fas fa-file-upload fa-9x"></i>Déposer un fichier CSV ici.</div>
+                </div>
+                <div class="tab-pane fade" id="result">
+                  <div class="my-3 border rounded border-muted bg-light text-muted d-flex align-items-center flex-column justify-content-center font-weight-bold" style="height:96vh;"><i class="fas fa-file-upload fa-9x"></i>Déposer un fichier CSV ici.</div>
+                </div>
+                <div class="tab-pane fade" id="aide">
+                  <h2>Fichier d'entrée</h2>
+                  <span>Le fichier d'entrée est au format csv séparé par des `;`.</br>
+                    Il est sous la forme du tableau suivant :</span>
+                  <table class="table table-striped">
+                    <thead class="thead-dark">
+                      <th scope="col"> Classe </th>
+                      <th scope="col"> Noms </th>
+                      <th scope="col"> Prénom </th>
+                      <th scope="col"> Spécialité 1 </th>
+                      <th scope="col"> Spécialité 2 </th>
+                      <th scope="col"> Spécialité 3 </th>
+                      <th scope="col"> ... </th>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td scope="row" colspan=3>Nombre d'élèves par spécialité</td>
+                        <td>35</td>
+                        <td>35</td>
+                        <td>12</td>
+                        <td></td>
+                      </tr>
+                      <tr>
+                        <td scope="row">Classe 1</td>
+                        <td>Noms 1</td>
+                        <td>Prénom 1</td>
+                        <td>1</td>
+                        <td>1</td>
+                        <td>1</td>
+                        <td></td>
+                      </tr>
+                      <tr>
+                        <td scope="row">Classe 2</td>
+                        <td>Noms 2</td>
+                        <td>Prénom 2</td>
+                        <td>1</td>
+                        <td>1</td>
+                        <td>1</td>
+                        <td></td>
+                      </tr>
+                      <tr>
+                        <td scope="row">Classe 3</td>
+                        <td>Noms 3</td>
+                        <td>Prénom 3</td>
+                        <td></td>
+                        <td>1</td>
+                        <td>1</td>
+                        <td>1</td>
+                      </tr>
+                      <tr>
+                        <td scope="row">Classe 4</td>
+                        <td>Noms 4</td>
+                        <td>Prénom 4</td>
+                        <td>1</td>
+                        <td>1</td>
+                        <td></td>
+                        <td>1</td>
+                      </tr>
+                      <tr>
+                        <td scope="row">Classe 5</td>
+                        <td>Noms 5</td>
+                        <td>Prénom 5</td>
+                        <td>1</td>
+                        <td></td>
+                        <td>1</td>
+                        <td>1</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+      </div>
+  </div>
+
+    <!-- <div id="help" class="fg">
       <div class="c">
       <button class="close" onclick="closeDiv('help')">X</button>
       <h2>Fichier d'entrée</h2>
@@ -193,7 +306,6 @@
           <td contenteditable='true'></td>
         </tr>
       </tbody>
-    </table>
-    <script src="opty.js" async=""></script>
+    </table> -->
   </body>
 </html>

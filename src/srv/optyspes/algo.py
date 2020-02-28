@@ -1,6 +1,5 @@
-from multiprocessing import Process, JoinableQueue, Manager
+from multiprocessing import Process, JoinableQueue, Manager, Lock
 import time
-from threading import Lock
 import random
 import os
 
@@ -24,6 +23,7 @@ class Gen:
         self.request = Manager().list()
         self.task = JoinableQueue(NB_PROCESS)
         self.proc = []
+        self.lock_id = Lock()
         p = Process(target=self.run, args=(self.request, self.task, ))
         p.start()
         self.proc.append(p)
@@ -43,15 +43,29 @@ class Gen:
         try:
             while True:
                 task = q.get()
-                id, p = task.getPopulation(NB_POPULATION)
+                with self.lock_id:
+                    id = task.getID()
+                p = task.getPopulation(NB_POPULATION)
                 print(id, len(p[0].matieres))
                 print("start gen", id)
-                for i in range(NB_GENERATION):
+                i = 0
+                resultat_ok = False
+                pas = 1
+                while i < NB_GENERATION:
                     p.sort(key=lambda x: x.score, reverse=False)
-                    task.tempResult(id, p[0], (i * 100)//NB_GENERATION)
+                    
+                    # test si on a une solution
+                    if not resultat_ok and (p[0].score < 100):
+                        resultat_ok = True
+                        # on fait encore quelque tour
+                        pas = max(1, (NB_GENERATION - i) / 10)
+
+                    task.tempResult(id, p[0], min(100,(i * 100)//NB_GENERATION))
                     pg = p[:NB_GARDER]
                     pg += random.sample(p[NB_GARDER:], NB_SAUVER)
                     p = pg + [random.choice(pg).melanger(random.choice(pg), PROBA_MUTATION) for _ in range(len(pg), NB_POPULATION)]
+                    i += pas
+
                 task.addResult(id, p[0])
                 q.task_done()
         except KeyboardInterrupt:

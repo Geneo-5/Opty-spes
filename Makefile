@@ -54,7 +54,7 @@ run:
 	$(Q)cd src && python3 __init__.py
 
 .phony: build
-build: env
+build: env extern
 	$(Q)convert $(RESSOURCES)/artificial-intelligence.svg $(CONVERT_ARG) -resize 512x512   $(DESTINATION)/icon.png
 ifeq ($(TARGET_PLATFORM),OSX)
 	# création de l'icone pour app mac os x
@@ -91,3 +91,21 @@ ifeq ($(TARGET_PLATFORM),LINUX)
 	$(Q)sed -i "s/Version=/Version=$(subst v,,$(VERSION))/g" $(DEB)/usr/share/applications/opty-spes.desktop
 	$(Q)cd $(DESTINATION) && dpkg-deb --build opty-spes-$(VERSION) $(DISTRIBUTION)
 endif
+#ifeq ($(TARGET_PLATFORM),OSX)
+#	ln -s /Applications $(DESTINATION)/Applications
+#	hdiutil create /tmp/tmp.dmg -ov -volname "Opty-Spes" -fs HFS+ -srcfolder "$(DESTINATION)"
+#	hdiutil convert /tmp/tmp.dmg -format UDZO -o $(DESTINATION)/Opty-Spes-$(VERSION).dmg
+#endif
+
+.phony: extern 
+extern:
+	# Télécharment des dépendences extern pour une utilisation offline
+	$(Q)mkdir -p src/clt/extern
+	$(Q)cd src/clt/extern && wget -N https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css
+	$(Q)cd src/clt/extern && wget -N https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css.map
+	$(Q)cd src/clt/extern && wget -N https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js
+	$(Q)cd src/clt/extern && wget -N https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js
+	$(Q)cd src/clt/extern && wget -N https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js.map
+	$(Q)cd src/clt/extern && wget -N https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js
+	$(Q)cd src/clt/extern && wget -N https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js.map
+	$(Q)cd src/clt/extern && wget -N https://use.fontawesome.com/releases/v5.12.1/js/all.js

@@ -31,6 +31,7 @@ Il est sous la forme du tableau suivant :
 
 ## Dépendances
 
+ - Python 3.7
  - PyInstaller
  
 ## Crédit

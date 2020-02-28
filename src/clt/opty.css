@@ -1,4 +1,14 @@
-table {    
+html,body {
+    height: 100%;
+}
+
+/*.nav-pills .nav-link.active {
+    background-color: #0000ff !important;
+}*/
+
+/* Sans bootstrap 4 */
+
+/* table {    
     border-collapse:collapse;
 }
 
@@ -70,7 +80,6 @@ th.rotate > div > span {
     height: 100%;
     overflow: auto;
     background-color: #d0d0d0;
-    /* width: 25%; */
     z-index: 5;
 }
 
@@ -94,4 +103,4 @@ th.rotate > div > span {
 
 .volet_ouvert > div{
     text-align: center;
-}
+} */

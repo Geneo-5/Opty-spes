@@ -19,6 +19,7 @@ MIMETYPE = {
     "jpg":'image/jpg',
     "png":'image/png',
     "js":'application/javascript',
+    "map":'application/javascript',
     "json":'application/json',
 }
 

@@ -42,6 +42,18 @@ class Eleves:
         return nb, cl
 
     def getData(self):
+        if len(self.config) == 0:
+            default_data = '<div class="my-3 border rounded border-muted bg-light text-muted d-flex align-items-center flex-column justify-content-center font-weight-bold" style="height:96vh;"><i class="fas fa-file-upload fa-9x"></i>Déposer un fichier CSV ici.</div>'
+            return json.dumps(
+            {
+                'status':'OK',
+                'innerHTML':{
+                    'param':default_data,
+                    'eleves':default_data,
+                    'result':default_data
+                }
+            })
+
         e = "<thead><th><div>Classe</div></th><th><div>Noms</div></th><th><div>Prénom</div></th>"
         for k in range(len(self.config)):
             n, _, _, _ = self.config[k]
@@ -67,8 +79,10 @@ class Eleves:
             {
                 'status':'OK',
                 'innerHTML':{
-                    'spe':c,
-                    'eleve':e,
+                    'message':'',
+                    'param':c,
+                    'eleves':e,
+                    'result':self.__getResult(),
                 }
             })
 
@@ -79,26 +93,28 @@ class Eleves:
         self.result.append((len(self.result), p))
         del self.resultTmp[id]
 
-    def getPopulation(self, nb):
+    def getID(self):
         pos = 0
         for i in range(1000):
             if i not in self.resultTmp:
                 self.resultTmp[i] = _Population(self)
-                pos = i
-                break
+                return i
+        raise Exception("get id range error")
+
+    def getPopulation(self, nb):
         population = []
         for _ in range(nb):
             p = _Population(self)
             p.matieres = {noms:random.sample(matiere, k=len(matiere)) for noms, matiere in self.matieres.items()}
             p.calculeScore()
             population.append(p)
-        return pos, population
+        return population
 
     def getCSV(self, id):
         id = int(id[3:])
         return self.result[id][1].getCSV()
 
-    def getStatus(self):
+    def __getResult(self):
         m = "<thead><th>#ID</th><th>Score</th><th>index</th></thead><tbody>"
         sortedResult = sorted(self.result, key=lambda x: x[1].score, reverse=False)
         i = 1
@@ -114,13 +130,17 @@ class Eleves:
         for i in tmp:
             m += i[1]
         m += "</tbody>"
+        return m
+
+    def getStatus(self):
         return json.dumps(
             {
                 'status':'OK',
                 'innerHTML':{
-                    'resultat':m,
+                    'result':self.__getResult(),
                 }
             })
+
 
 class _Population:
 
