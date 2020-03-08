@@ -227,7 +227,7 @@ class _Population:
             d = ""
             if download > -1:
                 d = f'<div class="mt-3"><form action="/download" method="post"><input type="hidden" name="id" value="{download}"><button type="submit" class="btn btn-secondary"><i class="fas fa-download"></i> Télécharger</button></form></div>'
-            m = f'<div class="border border-{color} rounded m-3">{p}<div class="row"><div class="col-2 text-center my-auto"><svg viewBox="0 0 140 140" style="height: 8rem;width: 8rem;" preserveAspectRatio="xMinYMin meet"><g><circle r="50%" cx="50%" cy="50%" class="c_{color}" /><text class="t_{int(math.log10(self.score + 0.1)) + 1}" x="50%" y="50%" text-anchor="middle" dy="0.3em">{self.score}</text></g></svg>{d}</div><table class="col table table-striped my-3 mr-3"><tbody>'
+            m = f'<div class="border border-{color} rounded m-3">{p}<div class="row pr-4"><div class="col-2 text-center my-auto"><svg viewBox="0 0 140 140" style="height: 8rem;width: 8rem;" preserveAspectRatio="xMinYMin meet"><g><circle r="50%" cx="50%" cy="50%" class="c_{color}" /><text class="t_{int(math.log10(self.score + 0.1)) + 1}" x="50%" y="50%" text-anchor="middle" dy="0.3em">{self.score}</text></g></svg>{d}</div><table class="col-10 table table-striped mt-3"><tbody>'
             k=0
             for noms, tmp in self.eleves.config.items():
                 if k == 0:
