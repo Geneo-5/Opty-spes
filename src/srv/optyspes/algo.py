@@ -28,7 +28,7 @@ class Gen:
         p.start()
         self.proc.append(p)
         for _ in range(NB_PROCESS):
-            p = Process(target=self.evaluation, args=(self.task, ))
+            p = Process(target=self.evaluation, args=(self.request, self.task, ))
             p.start()
             self.proc.append(p)
 
@@ -38,7 +38,7 @@ class Gen:
             p.join()
 
 
-    def evaluation(self, q):
+    def evaluation(self, r, q):
         print("start evaluation")
         try:
             while True:
@@ -52,6 +52,8 @@ class Gen:
                 resultat_ok = False
                 pas = 1
                 while i < NB_GENERATION:
+                    if len(r) == 0:
+                        break
                     p.sort(key=lambda x: x.score, reverse=False)
                     
                     # test si on a une solution
@@ -121,11 +123,7 @@ class Gen:
             return STATUS_FAIL
 
     def remove(self, task):
-        if task not in self.request:
-            return STATUS_FAIL
-        else:
-            del self.request[task]
-            return STATUS_OK
+        self.request[:] = []
         return STATUS_OK
 
     # def ask(self, task):

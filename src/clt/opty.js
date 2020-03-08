@@ -1,3 +1,7 @@
+function costum_allert(color, message) {
+    document.getElementById('message').innerHTML = '<div class="mt-3 alert alert-'+ color +' alert-dismissible fade show" role="alert">' + message +'<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'
+}
+
 function uploadFile(e) {
     if(e.dataTransfer.files){
         if(e.dataTransfer.files.length) {
@@ -5,7 +9,7 @@ function uploadFile(e) {
             e.stopPropagation();
             var f = e.dataTransfer.files[0];
             if (!f.type.match('.csv')) {
-                    document.getElementById('message').innerHTML = '<div class="mt-3 alert alert-danger alert-dismissible fade show" role="alert">Le fichier doit être un <strong>CSV</strong> !<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'
+                    costum_allert('danger', 'Le fichier doit être un <strong>CSV</strong> !')
                     return false ;
             }
             var reader = new FileReader();
@@ -24,6 +28,9 @@ function parseServerReturn(){
                 document.getElementById(i).innerHTML = json.innerHTML[i];
             }
         }
+        if (json.hasOwnProperty('message')) {
+            costum_allert(json.message.color, json.message.text)
+        }
     }
 }
 
@@ -41,15 +48,18 @@ function started(){
             getStatus()
             var id = setInterval(getStatus, 3000);
             var s = document.getElementById("stop")
-            s.innerText = "Arrêter le calculs"
+            s.checked = true;
             s.onclick = () => {
+                s.checked = true;
                 var xhttp = new XMLHttpRequest();
                 xhttp.onreadystatechange = () => {
                     if (this.readyState == 4 && this.status == 200) {
                         var json = JSON.parse(this.responseText);
                         if (json.status == "OK") {
-                            s.innerText = "Lancer le calcul"
+                            s.checked = false;
+                            s.onclick = start;
                             clearInterval(id);
+                            getStatus();
                         }
                     }
                 };
@@ -57,11 +67,14 @@ function started(){
                 xhttp.setRequestHeader("Content-type", "application/json");
                 xhttp.send('');
             }
+        } else {
+            document.getElementById("stop").checked = false;
         }
     }
 }
 
 function start(){
+    document.getElementById("stop").checked = false;
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = started;
     xhttp.open("POST", "start", true);

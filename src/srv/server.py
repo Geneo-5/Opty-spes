@@ -53,7 +53,7 @@ class webServer(BaseHTTPRequestHandler):
                 data = self.rfile.read(length)
 
                 # éxécution du service
-                message, typeData = srv.service.SERVICE[self.path](data)
+                message, typeData, autre = srv.service.SERVICE[self.path](data)
 
                 if message == None:
                     self.send_response(200)
@@ -64,6 +64,9 @@ class webServer(BaseHTTPRequestHandler):
                 # envoie de la réponse
                 self.send_response(200)
                 self.send_header("Content-type", MIMETYPE[typeData])
+                if autre:
+                    for k in autre.keys():
+                        self.send_header(k, autre[k])
                 self.end_headers()
                 self.wfile.write(message.encode('utf-8'))
             else:

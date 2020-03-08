@@ -10,6 +10,7 @@ class Eleves:
         self.config = {}
         self.result = Manager().list()
         self.resultTmp = Manager().dict()
+        self.solution_trouve = False
 
         if csv:
             csv = csv.replace('\r\n', '\n')
@@ -31,7 +32,7 @@ class Eleves:
             for opt in range(len(noms_matieres)):
                 # noms, nb classe, nb eleves/classe, nb eleves
                 tmp , classe = self._getNbEleve(opt, int(nb_eleves_matieres[opt]))
-                self.config[opt] = (noms_matieres[opt], classe, 0 if (classe == 0) else (tmp / classe), int(nb_eleves_matieres[opt]))
+                self.config[opt] = (noms_matieres[opt], classe, 0 if (classe == 0) else (tmp / classe), int(nb_eleves_matieres[opt]), tmp)
                 print(noms_matieres[opt], ":", tmp, "soit", classe, "classe(s)")
 
     def _getNbEleve(self, opt, nb_eleve):
@@ -41,9 +42,12 @@ class Eleves:
             cl = math.ceil(nb/nb_eleve)
         return nb, cl
 
+    def isEmpty(self):
+        return len(self.config) == 0
+
     def getData(self):
         if len(self.config) == 0:
-            default_data = '<div class="my-3 border rounded border-muted bg-light text-muted d-flex align-items-center flex-column justify-content-center font-weight-bold" style="height:96vh;"><i class="fas fa-file-upload fa-9x"></i>Déposer un fichier CSV ici.</div>'
+            default_data = '<div class="my-3 border rounded border-muted bg-light text-muted d-flex align-items-center flex-column justify-content-center font-weight-bold" style="height:calc(100vh - 32px);"><i class="fas fa-file-upload fa-9x"></i>Déposer un fichier CSV ici.</div>'
             return json.dumps(
             {
                 'status':'OK',
@@ -54,37 +58,42 @@ class Eleves:
                 }
             })
 
-        e = "<thead><th><div>Classe</div></th><th><div>Noms</div></th><th><div>Prénom</div></th>"
+        e = '<table class="table table-striped my-3"><thead class="thead-dark"><th scope="col">Classe</th><th scope="col">Noms</th><th scope="col">Prénom</th>'
         for k in range(len(self.config)):
-            n, _, _, _ = self.config[k]
-            e += f'<th class="rotate"><div><span>{n}</span></div></th>'
+            n, _, _, _, _ = self.config[k]
+            e += f'<th scope="col">{n}</th>'
         e += "</thead><tbody>"
         for k in self.matieres:
             n = k.split(';')
-            e += f"<tr><td class='tc'>{n[0]}</td><td>{n[1]}</td><td>{n[2]}</td>"
+            e += f'<tr><td scope="row">{n[0]}</td><td>{n[1]}</td><td>{n[2]}</td>'
             t = [0]*len(self.config)
             for i in self.matieres[k]:
                 t[i] = 1
             for i in t:
-                e += f'<td class="tc"><input type="checkbox" {"checked"*i} disabled></td>'
+                e += f'<td class="text-center"><input type="checkbox" {"checked"*i} disabled></td>'
             e += "</tr>"
-        e += "</tbody>"
+        e += "</tbody></table>"
 
-        c = "<thead><th>Spécialité</th><th>Nombre d'élèves maximun par classe</th><th>Nombre de classes</th></thead><tbody>"
+        c = '<table class="table table-striped my-3"><thead class="thead-dark"><th scope="col">Spécialité</th><th scope="col">Nb élèves max/groups</th><th scope="col">Nb élèves</th><th scope="col">Nb groups</th></thead><tbody>'
         for k in range(len(self.config)):
-            n, t, _, cl = self.config[k]
-            c += f"<tr><td>{n}</td><td class='tc'>{cl}</td><td class='tc'>{t}</td></tr>"
-        c += "</tbody>"
-        return json.dumps(
-            {
+            n, t, _, cl, nb = self.config[k]
+            c += f'<tr><td scope="row">{n}</td><td>{cl}</td><td>{nb}</td><td>{t}</td></tr>'
+        c += '</tbody></table>'
+
+        r = {
                 'status':'OK',
                 'innerHTML':{
-                    'message':'',
                     'param':c,
                     'eleves':e,
                     'result':self.__getResult(),
                 }
-            })
+            }
+
+        if (self.solution_trouve):
+            self.solution_trouve = False
+            r['message'] = {'color':'success', 'text':'Une solution a été trouvé !'}
+
+        return json.dumps(r)
 
     def tempResult(self, id, p, it):
         self.resultTmp[id] = (it, p)
@@ -92,6 +101,8 @@ class Eleves:
     def addResult(self, id, p):
         self.result.append((len(self.result), p))
         del self.resultTmp[id]
+        if p.score < 100:
+            self.solution_trouve = True
 
     def getID(self):
         pos = 0
@@ -115,31 +126,32 @@ class Eleves:
         return self.result[id][1].getCSV()
 
     def __getResult(self):
-        m = "<thead><th>#ID</th><th>Score</th><th>index</th></thead><tbody>"
-        sortedResult = sorted(self.result, key=lambda x: x[1].score, reverse=False)
-        i = 1
+        if len(self.result) == 0 and len(self.resultTmp) == 0:
+            return "<div class='arrow arrow-left'>Clicker sur \"Calculer\" pour lancer l'optimisation.</div>"
+        m = ""
         tmp = []
-        for p in sortedResult:
-            color = "#80FF80" if p[1].score <= 100 else "#FF8080"
-            tmp.append((p[1].score, f"<tr style='background-color:{color};'><td>{i}</td><td>{p[1].score}</td><td><form action='/download' method='post'><input type='hidden' name='id' value='{p[0]}'><button>Télécharger</button></form></td></tr>"))
-            i += 1
+        for p in self.result:
+            tmp.append((p[1].score, p[1].getHTML(download=p[0])))
         for k in self.resultTmp.keys():
-            color = "#80FF80" if self.resultTmp[k][1].score <= 100 else "#FF8080"
-            tmp.append((self.resultTmp[k][1].score, f"<tr style='background-color:{color};'><td></td><td>{self.resultTmp[k][1].score}</td><td><progress max='100' value='{self.resultTmp[k][0]}'>{self.resultTmp[k][0]}%</progress></td></tr>"))
+            tmp.append((self.resultTmp[k][1].score, self.resultTmp[k][1].getHTML(progress=self.resultTmp[k][0])))
         tmp.sort(key=lambda x: x[0], reverse=False)
         for i in tmp:
             m += i[1]
-        m += "</tbody>"
         return m
 
     def getStatus(self):
-        return json.dumps(
-            {
+        r = {
                 'status':'OK',
                 'innerHTML':{
                     'result':self.__getResult(),
                 }
-            })
+            }
+
+        if (self.solution_trouve):
+            self.solution_trouve = False
+            r['message'] = {'color':'success', 'text':'Une solution a été trouvé !'}
+
+        return json.dumps(r)
 
 
 class _Population:
@@ -148,12 +160,13 @@ class _Population:
         self.eleves = eleves
         self.matieres = {}
         self.score = None
+        self.html = ""
 
     def calculeScore(self):
         self.score = 0
         test_nb_classe = True
         for noms, tmp in self.eleves.config.items():
-            _, objectif, moyenne, nb_eleve = tmp
+            _, objectif, moyenne, nb_eleve, _ = tmp
             elems = []
             nb_classe = 0
             for i in range(len(next(iter(self.matieres.values())))):
@@ -204,3 +217,50 @@ class _Population:
                     sortie += ";"
             sortie += ";\n"
         return sortie
+    
+    def getHTML(self, progress=-1, download=-1):
+        if self.html == "":
+            color = "success" if self.score < 100 else "danger"
+            p = ""
+            if progress > -1:
+                p = f'<div class="progress"><div class="progress-bar progress-bar-striped progress-bar-animated bg-{color}" role="progressbar" style="width: {progress}%" aria-valuenow="{progress}" aria-valuemin="0" aria-valuemax="100"></div></div>'
+            d = ""
+            if download > -1:
+                d = f'<div class="mt-3"><form action="/download" method="post"><input type="hidden" name="id" value="{download}"><button type="submit" class="btn btn-secondary"><i class="fas fa-download"></i> Télécharger</button></form></div>'
+            m = f'<div class="border border-{color} rounded m-3">{p}<div class="row"><div class="col-2 text-center my-auto"><svg viewBox="0 0 140 140" style="height: 8rem;width: 8rem;" preserveAspectRatio="xMinYMin meet"><g><circle r="50%" cx="50%" cy="50%" class="c_{color}" /><text class="t_{int(math.log10(self.score + 0.1)) + 1}" x="50%" y="50%" text-anchor="middle" dy="0.3em">{self.score}</text></g></svg>{d}</div><table class="col table table-striped my-3 mr-3"><tbody>'
+            k=0
+            for noms, tmp in self.eleves.config.items():
+                if k == 0:
+                    m+='<tr><td scope="row">'
+                elif k % 2 == 0:
+                    m+='</td></tr><tr><td scope="row">'
+                else:
+                    m+='</td><td>'
+                k+=1
+                m+=f'{self.eleves.config[noms][0]}</td><td>'
+                _, objectif, _, nb_eleve, _ = tmp
+                nb_classe = 0
+                L = []
+                for i in range(len(next(iter(self.matieres.values())))):
+                    elem, classe = self.getNbElevePos(noms, i, nb_eleve)
+                    nb_classe += classe
+                    if classe == 0:
+                        pass
+                    elif classe == 1:
+                        L.append(elem)
+                    else: 
+                        for _ in range(classe-1):
+                           L.append(elem // classe)
+                           elem -= elem // classe
+                        L.append(elem)
+                L.sort(reverse=True)
+                color_c = "success" if nb_classe == objectif else "danger"
+                for i in L:
+                    s = int(math.log10(i + 0.1)) + 1
+                    m+= f'<svg class="mr-1" viewBox="0 0 140 140" style="height: 2rem;width: 2rem;" preserveAspectRatio="xMinYMin meet"><g><circle r="50%" cx="50%" cy="50%" class="c_{color_c}" /><text class="t_{s}" x="50%" y="50%" text-anchor="middle" dy="0.3em">{i}</text></g></svg>'
+            m+="</td></tr></tbody></table></div></div>"
+            if progress == -1:
+                return m
+            else:
+                self.html = m
+        return self.html

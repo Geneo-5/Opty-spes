@@ -2,105 +2,57 @@ html,body {
     height: 100%;
 }
 
-/*.nav-pills .nav-link.active {
-    background-color: #0000ff !important;
-}*/
-
-/* Sans bootstrap 4 */
-
-/* table {    
-    border-collapse:collapse;
+.c_success {
+    fill: #28a745;
 }
 
-td {
-    border: 1px solid purple;
+.c_danger {
+    fill: #dc3545;
 }
 
-.tc {
-    text-align: center;
+.t_0, .t_1 {
+    font-size: 6rem;
 }
 
-.fg {
-    visibility: hidden;
+.t_2 {
+    font-size: 5rem;
+}
+
+.t_3 {
+    font-size: 4rem;
+}
+
+.t_4 {
+    font-size: 3rem;
+}
+
+.t_5, .t_6 {
+    font-size: 2rem;
+}
+
+text { 
+    fill: #fff;
+    font-family: sans-serif;
+    font-weight:bold;
+}
+
+.arrow{
     position: absolute;
-    left: 0px;
-    top: 0px;
-    z-index: 10;
-    background-color: #00000080;
-    width: 100%;
-    height: 100%;
+    background: #17a2b8;
+    height:40px;
+    width: 400px;
+    top:210px;
+    line-height: 40px; 
+    text-align:center;
+    color:#fff;
 }
 
-#result {
-    text-align: center;
-}
-
-.close {
+.arrow-left:before{
+    content: "";
     position: absolute;
-    top: 25px;
-    right: 25px;
+    left: -20px;
+    top:0px;
+    border-top: 20px solid transparent;
+    border-bottom: 20px solid transparent;
+    border-right: 20px solid #17a2b8; 
 }
-
-.c {
-    padding: 50px;
-    background-color: white;
-    margin: 0;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    -ms-transform: translate(-50%,-50%);
-    transform: translate(-50%,-50%);
-}
-
-th.rotate {
-    height: 200px;
-    white-space: nowrap;
-}
-
-th > div {
-    transform: translateY(81px);
-    -ms-transform: translateY(81px);
-}
-
-th.rotate > div {
-    transform: translate(1em, 81px) rotate(315deg);
-    -ms-transform: translate(1em, 81px) rotate(315deg);
-    width: 30px;
-}
-th.rotate > div > span {
-    border-bottom: 1px solid purple;
-    padding: 5px 10px;
-}
-
-.volet {
-    display: block;
-    position: fixed;
-    top: 0px;
-    right: 0px;
-    height: 100%;
-    overflow: auto;
-    background-color: #d0d0d0;
-    z-index: 5;
-}
-
-.volet_ouvert {
-    padding: 10px;
-    display: none;
-}
-
-.volet_fermer {
-    display: block;
-    width: 2em;
-}
-
-.volet_fermer > div{
-    position: absolute;
-    transform: rotate(270deg);
-    -ms-transform: rotate(270deg);
-    top: 50%;
-    right: -1em;
-}
-
-.volet_ouvert > div{
-    text-align: center;
-} */
