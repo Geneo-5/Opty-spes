@@ -12,7 +12,7 @@ else
     endif
 endif
 tags=$(shell git describe --abbrev=0 --tags)
-diff-version=$(shell git log --pretty=oneline HEAD...$(tags) | wc -l)
+diff-version=$(shell git log --pretty=oneline HEAD...$(tags) | wc -l | sed "s/ //g")
 ifneq ($(diff-version),0)
 	VERSION=$(tags)-beta$(diff-version)
 else
@@ -45,12 +45,12 @@ all: env build
 
 .phony: env
 env:
-	$(Q)rm -rd $(DISTRIBUTION) 2>/dev/null || :
-	$(Q)rm -rd $(DESTINATION) 2>/dev/null || :
+	#$(Q)rm -rd $(DISTRIBUTION) 2>/dev/null || :
+	#$(Q)rm -rd $(DESTINATION) 2>/dev/null || :
 	$(Q)mkdir -p $(DESTINATION)
 
 .phony: run
-run:
+run: extern
 	$(Q)cd src && python3 __init__.py
 
 .phony: build
@@ -70,10 +70,31 @@ ifeq ($(TARGET_PLATFORM),OSX)
 	$(Q)convert $(RESSOURCES)/artificial-intelligence.svg $(CONVERT_ARG) -resize 512x512   $(DESTINATION)/appicon.iconset/icon_512x512.png
 	$(Q)convert $(RESSOURCES)/artificial-intelligence.svg $(CONVERT_ARG) -resize 1024x1024 $(DESTINATION)/appicon.iconset/icon_512x512@2x.png
 	$(Q)iconutil -c icns -o "$(DESTINATION)/appicon.icns" "$(DESTINATION)/appicon.iconset"
+	# build python 3.7
+	$(Q)cd build && wget -N https://www.python.org/ftp/python/3.7.6/Python-3.7.6.tgz && tar xzf Python-3.7.6.tgz
+	$(Q)cd build/Python-3.7.6 && ./configure --enable-framework=$(DESTINATION)/Library/Frameworks
+	$(Q)cd build/Python-3.7.6 && make
+	$(Q)cd build/Python-3.7.6 && make install
+	$(Q)./build/bin/pip3 install PyInstaller
+	# création de l'exécutable
+	$(Q)./build/bin/python3 -m PyInstaller opty-spes.spec
+	# création d'un dmg
+	$(Q)rm -rd $(DESTINATION)/out_app
+	$(Q)mkdir -p $(DESTINATION)/out_app
+	$(Q)ln -s /Applications $(DESTINATION)/out_app
+	$(Q)cp -avR $(DISTRIBUTION)/*.app $(DESTINATION)/out_app
+	$(Q)mkdir -p $(DESTINATION)/mnt
+	$(Q)rm $(DESTINATION)/tmp.dmg 2>/dev/null || :
+	$(Q)hdiutil create -format UDRW -volname "Opty-Spes" -srcfolder "$(DESTINATION)/out_app" -size 100m $(DESTINATION)/tmp.dmg
+	$(Q)hdiutil attach $(DESTINATION)/tmp.dmg -mountroot $(DESTINATION)/mnt
+	$(Q)cp -avR $(DESTINATION)/appicon.iconset $(DESTINATION)/mnt/Opty-Spes/.VolumeIcon.icns
+	$(Q)SetFile -a C $(DESTINATION)/mnt/Opty-Spes
+	$(Q)hdiutil detach $(DESTINATION)/mnt/Opty-Spes
+	$(Q)hdiutil convert $(DESTINATION)/tmp.dmg -format UDZO -o $(DISTRIBUTION)/opty-spes-$(VERSION)
 endif
+ifeq ($(TARGET_PLATFORM),LINUX)
 	# création de l'exécutable
 	$(Q)pyinstaller opty-spes.spec
-ifeq ($(TARGET_PLATFORM),LINUX)
 	# création du .deb pour linux
 	$(Q)mkdir -p $(DEB)/DEBIAN
 	$(Q)mkdir -p $(DEB)/usr/bin
@@ -91,11 +112,6 @@ ifeq ($(TARGET_PLATFORM),LINUX)
 	$(Q)sed -i "s/Version=/Version=$(subst v,,$(VERSION))/g" $(DEB)/usr/share/applications/opty-spes.desktop
 	$(Q)cd $(DESTINATION) && dpkg-deb --build opty-spes-$(VERSION) $(DISTRIBUTION)
 endif
-#ifeq ($(TARGET_PLATFORM),OSX)
-#	ln -s /Applications $(DESTINATION)/Applications
-#	hdiutil create /tmp/tmp.dmg -ov -volname "Opty-Spes" -fs HFS+ -srcfolder "$(DESTINATION)"
-#	hdiutil convert /tmp/tmp.dmg -format UDZO -o $(DESTINATION)/Opty-Spes-$(VERSION).dmg
-#endif
 
 .phony: extern 
 extern:

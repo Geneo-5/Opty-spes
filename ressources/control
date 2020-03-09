@@ -3,7 +3,7 @@ Version:
 Section: base
 Priority: optional
 Architecture: amd64
-Maintainer: Geneo-5
+Maintainer: Loïc Jourdheuil <loicjs@orange.fr>
 Bugs: https://github.com/Geneo-5/Opty-spes/issues
 Homepage: https://github.com/Geneo-5/Opty-spes
 Description: Programme d'optimisation des spécialités de la 1ère et la Terminale.

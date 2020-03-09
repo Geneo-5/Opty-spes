@@ -29,5 +29,5 @@ exe = EXE(pyz,
 
 app = BUNDLE(exe,
          name='opty-spes.app',
-         icon='build/appicon.icns',
+         icon='../build/appicon.icns',
          bundle_identifier=None)
