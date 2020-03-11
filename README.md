@@ -28,11 +28,6 @@ Il est sous la forme du tableau suivant :
 | Classe 3  | Noms 3   | Prénom 3  | Spécialité 1 | Spécialité 4 | Spécialité 6 |
 | Classe 4  | Noms 4   | Prénom 4  | Spécialité 1 | Spécialité 2 | Spécialité 5 |
 | Classe 5  | Noms 5   | Prénom 5  | Spécialité 1 | Spécialité 2 | Spécialité 5 |
-
-## Dépendances
-
- - Python 3.7
- - PyInstaller
  
 ## Crédit
 Icons made by [Eucalyp](https://www.flaticon.com/authors/eucalyp) from [www.flaticon.com](https://www.flaticon.com)
