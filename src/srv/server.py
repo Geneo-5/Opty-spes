@@ -3,6 +3,7 @@ import os
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import time
 import srv.service
+import threading
 
 try:
     # PyInstaller creates a temp folder and stores path in _MEIPASS
@@ -72,15 +73,16 @@ class webServer(BaseHTTPRequestHandler):
             else:
                 self.send_error(404,'File Not Found')
         except KeyboardInterrupt:
-            raise KeyboardInterrupt
+            sys.exit()
 
 def start():
     print('Server listening on port 31415...')
     httpd = HTTPServer(('127.0.0.1', 31415), webServer)
-    try:
-        httpd.serve_forever()
-    except KeyboardInterrupt:
-        pass
-    httpd.server_close()
-    print("Server stopped.")
-    sys.exit()
+    # try:
+    #     httpd.serve_forever()
+    # except KeyboardInterrupt:
+    #     pass
+    # httpd.server_close()
+    # print("Server stopped.")
+    # sys.exit()
+    threading.Thread(target=httpd.serve_forever).start()
