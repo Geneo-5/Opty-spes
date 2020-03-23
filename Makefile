@@ -64,6 +64,7 @@ all: $(TARGET_OUTPUT)
 
 .phony: env
 env: clean
+	$(Q)rm src/VERSION.py 2>/dev/null || :
 	$(Q)echo "VERSION='$(VERSION)'" > src/VERSION.py
 	$(Q)mkdir -p $(DESTINATION)
 	$(Q)mkdir -p $(PYTHON_DIR)
@@ -84,11 +85,11 @@ distclean: mrproper
 
 
 .phony: test
-test: env extern $(PYTHON_ENV)
+test: env resource_extern $(PYTHON_ENV)
 	$(Q)cd src && $(PYTHON) __init__.py
 
 .phony: build
-build: env extern $(PYTHON_ENV)
+build: env resource_extern $(PYTHON_ENV)
 	$(Q)convert $(RESSOURCES)/artificial-intelligence.svg $(CONVERT_ARG) -resize 512x512   $(DESTINATION)/icon.png
 ifeq ($(TARGET_PLATFORM),OSX)
 	# création de l'icone pour app mac os x
@@ -108,8 +109,8 @@ endif
 	# création de l'exécutable
 	$(Q)$(PYTHON) -m PyInstaller opty-spes.spec
 
-.phony: extern 
-extern:
+.phony: resource_extern 
+resource_extern:
 	# Télécharment des dépendences extern pour une utilisation offline
 	$(Q)mkdir -p src/clt/extern
 	$(Q)cd src/clt/extern && wget -N https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css
@@ -132,9 +133,9 @@ python: env
 	$(Q)cd build/openssl-$(OPENSSL_VERSION) && make install
 
 ifeq ($(TARGET_PLATFORM),OSX)
-	$(Q)cd build/Python-$(PYTHON_VERSION) && ./configure --enable-optimizations --with-openssl="$(PYTHON_DIR)/openssl" --enable-framework=$(PYTHON_DIR)/Library/Frameworks
+	$(Q)cd build/Python-$(PYTHON_VERSION) && ./configure --with-lto --enable-optimizations --with-openssl="$(PYTHON_DIR)/openssl" --enable-framework=$(PYTHON_DIR)/Library/Frameworks
 else
-	$(Q)cd build/Python-$(PYTHON_VERSION) && ./configure --enable-optimizations --with-openssl="$(PYTHON_DIR)/openssl" --enable-shared --prefix=$(PYTHON_DIR)
+	$(Q)cd build/Python-$(PYTHON_VERSION) && ./configure --with-lto --enable-optimizations --with-openssl="$(PYTHON_DIR)/openssl" --enable-shared --prefix=$(PYTHON_DIR)
 endif
 	$(Q)cd build/Python-$(PYTHON_VERSION) && make -j8
 	$(Q)cd build/Python-$(PYTHON_VERSION) && make install
