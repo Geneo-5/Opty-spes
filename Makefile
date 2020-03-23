@@ -29,6 +29,8 @@ else
 Q=
 endif
 
+OPENSSL_VERSION=1.1.1e
+PYTHON_VERSION=3.7.7
 PYTHON_ENV=
 PYTHON=python3
 
@@ -42,13 +44,13 @@ else
     ifeq ($(UNAME_S),Linux)
         TARGET_PLATFORM = LINUX
 		TARGET_OUTPUT = deb
-		PYTHON=/usr/bin/python
-		PIP=/usr/bin/pip3
+		PYTHON=$(PYTHON_DIR)/bin/python3
+		PIP=$(PYTHON_DIR)/bin/pip3
     endif
     ifeq ($(UNAME_S),Darwin)
         TARGET_PLATFORM = OSX
 		PYTHON=$(PYTHON_DIR)/bin/python3
-		PIP=$(PYTHON_DIR)/bin/pip3 
+		PIP=$(PYTHON_DIR)/bin/pip3
 		TARGET_OUTPUT = dmg
     endif
 endif
@@ -62,6 +64,7 @@ all: $(TARGET_OUTPUT)
 
 .phony: env
 env: clean
+	$(Q)echo "VERSION='$(VERSION)'" > src/VERSION.py
 	$(Q)mkdir -p $(DESTINATION)
 	$(Q)mkdir -p $(PYTHON_DIR)
 	$(Q)mkdir -p $(DISTRIBUTION)
@@ -82,8 +85,7 @@ distclean: mrproper
 
 .phony: test
 test: env extern $(PYTHON_ENV)
-	$(Q)cd src && python3 __init__.py
-	# $(Q)cd src && $(PYTHON) __init__.py
+	$(Q)cd src && $(PYTHON) __init__.py
 
 .phony: build
 build: env extern $(PYTHON_ENV)
@@ -121,15 +123,22 @@ extern:
 
 .phony: python
 python: env
-	# build python 3.7.6
-	$(Q)cd build && wget -N https://www.python.org/ftp/python/3.7.6/Python-3.7.6.tgz && tar xzf Python-3.7.6.tgz
+	# build python $(PYTHON_VERSION) with opensll $(OPENSSL_VERSION)
+	$(Q)cd build && wget -N https://www.openssl.org/source/openssl-$(OPENSSL_VERSION).tar.gz && tar zxf openssl-$(OPENSSL_VERSION).tar.gz
+	$(Q)cd build && wget -N https://www.python.org/ftp/python/$(PYTHON_VERSION)/Python-$(PYTHON_VERSION).tgz && tar xzf Python-$(PYTHON_VERSION).tgz
+
+	$(Q)cd build/openssl-$(OPENSSL_VERSION) && ./config --prefix=$(PYTHON_DIR)/openssl --openssldir=$(PYTHON_DIR)/openssl
+	$(Q)cd build/openssl-$(OPENSSL_VERSION) && make -j8
+	$(Q)cd build/openssl-$(OPENSSL_VERSION) && make install
+
 ifeq ($(TARGET_PLATFORM),OSX)
-	$(Q)cd build/Python-3.7.6 && ./configure --enable-framework=$(PYTHON_DIR)/Library/Frameworks
+	$(Q)cd build/Python-$(PYTHON_VERSION) && ./configure --enable-optimizations --with-openssl="$(PYTHON_DIR)/openssl" --enable-framework=$(PYTHON_DIR)/Library/Frameworks
 else
-	$(Q)cd build/Python-3.7.6 && ./configure --enable-shared --prefix=$(PYTHON_DIR)
+	$(Q)cd build/Python-$(PYTHON_VERSION) && ./configure --enable-optimizations --with-openssl="$(PYTHON_DIR)/openssl" --enable-shared --prefix=$(PYTHON_DIR)
 endif
-	$(Q)cd build/Python-3.7.6 && make
-	$(Q)cd build/Python-3.7.6 && make install
+	$(Q)cd build/Python-$(PYTHON_VERSION) && make -j8
+	$(Q)cd build/Python-$(PYTHON_VERSION) && make install
+	$(Q)$(PIP) install --upgrade pip
 	$(Q)$(PIP) install -r requirements.txt
 
 .phony: deb

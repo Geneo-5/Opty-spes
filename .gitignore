@@ -106,3 +106,4 @@ venv.bak/
 # fichier extern
 /src/clt/extern/*
 /extern
+/src/VERSION.py

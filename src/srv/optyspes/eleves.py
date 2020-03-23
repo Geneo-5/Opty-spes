@@ -12,6 +12,7 @@ class Eleves:
         self.resultTmp = Manager().dict()
         self.solution_trouve = False
 
+        # TODO analyser la cohérence de l'entrée
         if csv:
             csv = csv.replace('\r\n', '\n')
             csv = csv.replace('\n\r', '\n')
@@ -21,6 +22,8 @@ class Eleves:
 
             for ligne in csv[2:]:
                 option = ligne.replace('\n', '').split(';')
+                if len(option) < 3:
+                    continue
                 noms = option[0]+";"+option[1]+";"+option[2]
                 option = option[3:]
                 spe = []
@@ -108,7 +111,7 @@ class Eleves:
         pos = 0
         for i in range(1000):
             if i not in self.resultTmp:
-                self.resultTmp[i] = _Population(self)
+                self.resultTmp[i] = (0,None)
                 return i
         raise Exception("get id range error")
 
@@ -133,6 +136,8 @@ class Eleves:
         for p in self.result:
             tmp.append((p[1].score, p[1].getHTML(download=p[0])))
         for k in self.resultTmp.keys():
+            if self.resultTmp[k][1] == None:
+                continue
             tmp.append((self.resultTmp[k][1].score, self.resultTmp[k][1].getHTML(progress=self.resultTmp[k][0])))
         tmp.sort(key=lambda x: x[0], reverse=False)
         for i in tmp:
@@ -159,7 +164,7 @@ class _Population:
     def __init__(self, eleves):
         self.eleves = eleves
         self.matieres = {}
-        self.score = None
+        self.score = 999999
         self.html = ""
 
     def calculeScore(self):

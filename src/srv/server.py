@@ -2,16 +2,14 @@ import sys
 import os
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import time
+import VERSION
 import srv.service
-import threading
 
 try:
     # PyInstaller creates a temp folder and stores path in _MEIPASS
     RESOURCE = os.path.abspath(os.path.join(getattr(sys, '_MEIPASS'),"clt/"))
 except:
     RESOURCE = os.path.abspath(os.path.join(os.path.abspath(os.path.dirname(__file__)),"../clt/"))
-
-print(RESOURCE)
 
 MIMETYPE = {
     "html":'text/html',
@@ -37,7 +35,8 @@ class webServer(BaseHTTPRequestHandler):
                 self.send_header("Content-type", mimetype)
                 self.end_headers()
                 with open(abspath, "rb") as in_file:
-                    self.wfile.write(in_file.read())
+                    tmp = in_file.read()
+                    self.wfile.write(tmp.replace(b"###VERSION###", VERSION.VERSION.encode("utf8")))
             else:
                 self.send_error(404,'File Not Found')
         except:
@@ -78,11 +77,10 @@ class webServer(BaseHTTPRequestHandler):
 def start():
     print('Server listening on port 31415...')
     httpd = HTTPServer(('127.0.0.1', 31415), webServer)
-    # try:
-    #     httpd.serve_forever()
-    # except KeyboardInterrupt:
-    #     pass
-    # httpd.server_close()
-    # print("Server stopped.")
-    # sys.exit()
-    threading.Thread(target=httpd.serve_forever).start()
+    try:
+        httpd.serve_forever()
+    except KeyboardInterrupt:
+        pass
+    httpd.server_close()
+    print("Server stopped.")
+    sys.exit()
