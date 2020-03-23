@@ -9,7 +9,7 @@ Il est sous la forme du tableau suivant :
 
 |  Classe   |   Noms   |  Prénom   | Spécialité 1 | Spécialité 2 | Spécialité 3 | ... |
 |:---------:|:--------:|:---------:|:------------:|:------------:|:------------:|:---:|
-| Nombre d'élevés par spécialité |||      35      |      35      |      12      |     |
+| Nombre d'élèves par spécialité |||      35      |      35      |      12      |     |
 | Classe 1  | Noms 1   | Prénom 1  |       1      |      1       |       1      |     |
 | Classe 2  | Noms 2   | Prénom 2  |       1      |      1       |       1      |     |
 | Classe 3  | Noms 3   | Prénom 3  |              |      1       |       1      |  1  |
@@ -28,3 +28,10 @@ Il est sous la forme du tableau suivant :
 | Classe 3  | Noms 3   | Prénom 3  | Spécialité 1 | Spécialité 4 | Spécialité 6 |
 | Classe 4  | Noms 4   | Prénom 4  | Spécialité 1 | Spécialité 2 | Spécialité 5 |
 | Classe 5  | Noms 5   | Prénom 5  | Spécialité 1 | Spécialité 2 | Spécialité 5 |
+ 
+## APT
+ - libffi-dev
+ - imagemagick
+
+## Crédit
+Icons made by [Eucalyp](https://www.flaticon.com/authors/eucalyp) from [www.flaticon.com](https://www.flaticon.com)

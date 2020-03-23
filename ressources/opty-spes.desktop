@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=Opty Spes
+Version=
+Type=Application
+Terminal=false
+Exec=/usr/bin/opty-spes
+Icon=/usr/share/pixmaps/opty-spes.icon.png

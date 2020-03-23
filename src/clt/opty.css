@@ -1,0 +1,58 @@
+html,body {
+    height: 100%;
+}
+
+.c_success {
+    fill: #28a745;
+}
+
+.c_danger {
+    fill: #dc3545;
+}
+
+.t_0, .t_1 {
+    font-size: 6rem;
+}
+
+.t_2 {
+    font-size: 5rem;
+}
+
+.t_3 {
+    font-size: 4rem;
+}
+
+.t_4 {
+    font-size: 3rem;
+}
+
+.t_5, .t_6 {
+    font-size: 2rem;
+}
+
+text { 
+    fill: #fff;
+    font-family: sans-serif;
+    font-weight:bold;
+}
+
+.arrow{
+    position: absolute;
+    background: #17a2b8;
+    height:40px;
+    width: 400px;
+    top:210px;
+    line-height: 40px; 
+    text-align:center;
+    color:#fff;
+}
+
+.arrow-left:before{
+    content: "";
+    position: absolute;
+    left: -20px;
+    top:0px;
+    border-top: 20px solid transparent;
+    border-bottom: 20px solid transparent;
+    border-right: 20px solid #17a2b8; 
+}
