@@ -35,7 +35,7 @@ def getStatus(data):
 
 def download(id):
     global ELEVES
-    return ELEVES.getCSV(id), 'csv', {'Content-Disposition':f'attachment;filename="résultat_{int(id[3:])}.pdf"'}
+    return ELEVES.getCSV(id), 'csv', {'Content-Disposition':f'attachment;filename="résultat_{int(id[3:])}.csv"'}
 
 # def update(data):
 #     return ELEVES.update(data), 'json'
