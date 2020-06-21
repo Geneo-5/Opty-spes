@@ -140,7 +140,7 @@ endif
 	$(Q)cd build/Python-$(VERSION_PYTHON) && make -j8
 	$(Q)cd build/Python-$(VERSION_PYTHON) && make install
 	$(Q)$(PIP) install --upgrade pip
-	$(Q)$(PIP) install -r requirements.txt
+	$(Q)$(PIP) install --no-cache-dir -r requirements.txt
 
 .phony: deb
 deb: build
