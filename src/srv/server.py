@@ -79,6 +79,7 @@ class webServer(BaseHTTPRequestHandler):
             sys.exit()
 
 def start():
+    srv.service.init()
     print('Server listening on port 31415...')
     httpd = HTTPServer(('127.0.0.1', 31415), webServer)
     try:

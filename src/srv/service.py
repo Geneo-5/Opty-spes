@@ -2,9 +2,10 @@ from srv.optyspes.eleves import Eleves
 from srv.optyspes.algo import Gen
 import base64
 
-global ELEVES, TASK
-ELEVES = Eleves()
-TASK = Gen()
+def init():
+    global ELEVES, TASK
+    ELEVES = Eleves()
+    TASK = Gen()
 
 def stopServer(data):
     if len(data) > 0:
