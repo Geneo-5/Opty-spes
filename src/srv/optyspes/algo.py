@@ -1,7 +1,11 @@
+import multiprocessing
 from multiprocessing import Process, JoinableQueue, Manager, Lock
 import time
 import random
 import os
+
+# TODO migre to spawn instead
+multiprocessing.set_start_method("fork")
 
 NB_PROCESS = os.cpu_count()
 
