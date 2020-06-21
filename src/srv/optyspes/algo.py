@@ -77,7 +77,7 @@ class Gen:
         try:
             while True:
                 if len(request) == 0:
-                    time.sleep(10)
+                    time.sleep(3)
                     continue
                 for _ in range(NB_PROCESS):
                     task.put(random.choice(request))

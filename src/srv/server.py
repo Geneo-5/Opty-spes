@@ -4,6 +4,7 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 import time
 import VERSION
 import srv.service
+from srv.optyspes.eleves import ElevesException
 
 try:
     # PyInstaller creates a temp folder and stores path in _MEIPASS
@@ -52,8 +53,11 @@ class webServer(BaseHTTPRequestHandler):
 
                 data = self.rfile.read(length)
 
-                # éxécution du service
-                message, typeData, autre = srv.service.SERVICE[self.path](data)
+                try:
+                    # éxécution du service
+                    message, typeData, autre = srv.service.SERVICE[self.path](data)
+                except ElevesException as e:
+                    message, typeData, autre = e.getError()
 
                 if message == None:
                     self.send_response(200)

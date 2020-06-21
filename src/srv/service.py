@@ -45,7 +45,7 @@ def start(data):
     if len(data) > 0:
         raise ValueError("Too many argument")
     if ELEVES.isEmpty():
-        return '{"status":"FAIL"}', 'json'
+        return '{"status":"FAIL"}', 'json', None
     return TASK.add(ELEVES), 'json', None
 
 def stop(data):
