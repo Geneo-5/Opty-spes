@@ -59,7 +59,7 @@ class webServer(BaseHTTPRequestHandler):
                 except ElevesException as e:
                     message, typeData, autre = e.getError()
 
-                if message == None:
+                if message is None:
                     self.send_response(200)
                     self.end_headers()
                     self.wfile.write(b'')

@@ -9,7 +9,7 @@ class ElevesException(Exception):
         super().__init__(self.message)
 
     def getError(self):
-        if self.message == None:
+        if self.message is None:
             raise Exception
         return json.dumps(
             {
@@ -180,7 +180,7 @@ class Eleves:
         for p in self.result:
             tmp.append((p[1].score, p[1].getHTML(download=p[0])))
         for k in self.resultTmp.keys():
-            if self.resultTmp[k][1] == None:
+            if self.resultTmp[k][1] is None:
                 continue
             tmp.append((self.resultTmp[k][1].score, self.resultTmp[k][1].getHTML(progress=self.resultTmp[k][0])))
         tmp.sort(key=lambda x: x[0], reverse=False)
