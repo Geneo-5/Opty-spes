@@ -1,7 +1,11 @@
+import multiprocessing
 from multiprocessing import Process, JoinableQueue, Manager, Lock
 import time
 import random
 import os
+
+# TODO migre to spawn instead
+multiprocessing.set_start_method("fork")
 
 NB_PROCESS = os.cpu_count()
 
@@ -77,7 +81,7 @@ class Gen:
         try:
             while True:
                 if len(request) == 0:
-                    time.sleep(10)
+                    time.sleep(3)
                     continue
                 for _ in range(NB_PROCESS):
                     task.put(random.choice(request))

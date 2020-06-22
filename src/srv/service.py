@@ -2,9 +2,10 @@ from srv.optyspes.eleves import Eleves
 from srv.optyspes.algo import Gen
 import base64
 
-global ELEVES, TASK
-ELEVES = Eleves()
-TASK = Gen()
+def init():
+    global ELEVES, TASK
+    ELEVES = Eleves()
+    TASK = Gen()
 
 def stopServer(data):
     if len(data) > 0:
@@ -35,7 +36,7 @@ def getStatus(data):
 
 def download(id):
     global ELEVES
-    return ELEVES.getCSV(id), 'csv', {'Content-Disposition':f'attachment;filename="résultat_{int(id[3:])}.pdf"'}
+    return ELEVES.getCSV(id), 'csv', {'Content-Disposition':f'attachment;filename="résultat_{int(id[3:])}.csv"'}
 
 # def update(data):
 #     return ELEVES.update(data), 'json'
@@ -45,7 +46,7 @@ def start(data):
     if len(data) > 0:
         raise ValueError("Too many argument")
     if ELEVES.isEmpty():
-        return '{"status":"FAIL"}', 'json'
+        return '{"status":"FAIL"}', 'json', None
     return TASK.add(ELEVES), 'json', None
 
 def stop(data):

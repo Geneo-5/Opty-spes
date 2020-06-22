@@ -3,6 +3,23 @@ import json
 import math
 from multiprocessing import Manager
 
+class ElevesException(Exception):
+    def __init__(self, message=None):
+        self.message = message
+        super().__init__(self.message)
+
+    def getError(self):
+        if self.message is None:
+            raise Exception
+        return json.dumps(
+            {
+                'status':'FAIL',
+                'message':{
+                    'color':'danger',
+                    'text':self.message
+                }
+            }), 'json', None
+
 class Eleves:
 
     def __init__(self, csv=''):
@@ -12,14 +29,24 @@ class Eleves:
         self.resultTmp = Manager().dict()
         self.solution_trouve = False
 
-        # TODO analyser la cohérence de l'entrée
         if csv:
             csv = csv.replace('\r\n', '\n')
             csv = csv.replace('\n\r', '\n')
             csv = csv.split('\n')
             noms_matieres = csv[0].replace('\n', '').split(';')[3:]
             nb_eleves_matieres = csv[1].replace('\n', '').split(';')[3:]
+            try:
+                nb_eleves_matieres = [abs(int(x)) for x in nb_eleves_matieres]
+            except:
+                raise ElevesException("Mauvais format des nombres dans la ligne 'Nombre d'élèves par spécialité'")
 
+            if 0 in nb_eleves_matieres:
+                raise ElevesException("Valeur 0 interdite dans la ligne 'Nombre d'élèves par spécialité'")
+
+            if len(noms_matieres) != len(nb_eleves_matieres):
+                raise ElevesException("Incohérence entre La liste des spécialités et la ligne 'Nombre d'élèves par spécialité'")
+
+            t = {}
             for ligne in csv[2:]:
                 option = ligne.replace('\n', '').split(';')
                 if len(option) < 3:
@@ -28,14 +55,30 @@ class Eleves:
                 option = option[3:]
                 spe = []
                 for i in range(len(noms_matieres)):
-                    if (option[i] != '') and (int(option[i]) == 1):
-                        spe.append(i)
+                    try:
+                        if (option[i] != '') and (int(option[i]) == 1):
+                            spe.append(i)
+                    except:
+                        raise ElevesException(f"Mauvais format pour {' '.join(noms.split(';'))}")
                 self.matieres[noms] = spe
+                if len(spe) not in t:
+                    t[len(spe)] = 0
+                t[len(spe)] += 1
+
+            # Test si tous les élèves ont le même nombre de spécialité
+            if len(t) == 0:
+                raise ElevesException("Aucune entré élèves")
+            elif len(t) != 1:
+                m = "il y a "
+                for i in t.keys():
+                    m+= f"{t[i]} élève(s) avec {i} choix, "
+                m = m[:-2]
+                raise ElevesException(m)
 
             for opt in range(len(noms_matieres)):
                 # noms, nb classe, nb eleves/classe, nb eleves
-                tmp , classe = self._getNbEleve(opt, int(nb_eleves_matieres[opt]))
-                self.config[opt] = (noms_matieres[opt], classe, 0 if (classe == 0) else (tmp / classe), int(nb_eleves_matieres[opt]), tmp)
+                tmp , classe = self._getNbEleve(opt, nb_eleves_matieres[opt])
+                self.config[opt] = (noms_matieres[opt], classe, 0 if (classe == 0) else (tmp / classe), nb_eleves_matieres[opt], tmp)
                 print(noms_matieres[opt], ":", tmp, "soit", classe, "classe(s)")
 
     def _getNbEleve(self, opt, nb_eleve):
@@ -48,6 +91,7 @@ class Eleves:
     def isEmpty(self):
         return len(self.config) == 0
 
+    # TODO use Template
     def getData(self):
         if len(self.config) == 0:
             default_data = '<div class="my-3 border rounded border-muted bg-light text-muted d-flex align-items-center flex-column justify-content-center font-weight-bold" style="height:calc(100vh - 32px);"><i class="fas fa-file-upload fa-9x"></i>Déposer un fichier CSV ici.</div>'
@@ -136,7 +180,7 @@ class Eleves:
         for p in self.result:
             tmp.append((p[1].score, p[1].getHTML(download=p[0])))
         for k in self.resultTmp.keys():
-            if self.resultTmp[k][1] == None:
+            if self.resultTmp[k][1] is None:
                 continue
             tmp.append((self.resultTmp[k][1].score, self.resultTmp[k][1].getHTML(progress=self.resultTmp[k][0])))
         tmp.sort(key=lambda x: x[0], reverse=False)
@@ -208,6 +252,7 @@ class _Population:
         resultat.calculeScore()
         return resultat
 
+    # TODO use Template
     def getCSV(self):
         sortie = "CLASSE;NOM;PRENOM;"
         for i in range(len(next(iter(self.matieres.values())))):
@@ -222,7 +267,8 @@ class _Population:
                     sortie += ";"
             sortie += ";\n"
         return sortie
-    
+
+    # TODO use Template
     def getHTML(self, progress=-1, download=-1):
         if self.html == "":
             color = "success" if self.score < 100 else "danger"
